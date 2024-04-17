@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form
-from services.hashtag_service import Controller
-from database import mongodb
+from app.services.hashtag_service import Controller
+from app.database import mongodb
 
 router = APIRouter()
 controller = Controller()

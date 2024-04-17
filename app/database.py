@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from odmantic import AIOEngine
-from config import MONGO_DB_NAME, MONGO_DB_URL
+from app.config import MONGO_DB_NAME, MONGO_DB_URL
 
 class MongoDB:
     def __init__(self):
