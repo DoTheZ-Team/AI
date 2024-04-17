@@ -1,6 +1,6 @@
 from models import mongodb
 from datetime import datetime
-from domain.Hashtag import Hashtag
+from Hashtag import Hashtag
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity

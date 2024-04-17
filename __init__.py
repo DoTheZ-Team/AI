@@ -3,7 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from odmantic import AIOEngine
 
 # Secrets.json에서 MongoDB 정보를 가져옴.
-from config.config import MONGO_DB_NAME, MONGO_DB_URL
+from app.config import MONGO_DB_NAME, MONGO_DB_URL
 
 # 몽고디비 연결
 class MongoDB:
