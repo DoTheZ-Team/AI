@@ -5,11 +5,6 @@ from src.models.recommendation import Recommendation, Recommendations
 
 router = APIRouter()
 
-# @router.post("/user/hashtag/update")
-# async def update_hashtag(member_id: int = Form(), content: str = Form()):
-#     hashtag = await controller.update_hashtag(member_id, content)
-#     return hashtag
-
 @router.get("/user/{member_id}/recommend", response_model=Recommendations)
 async def recommend_user(member_id: int):
     # if(새로운 해시태그 추가): 아래의 함수 실행: 새로운 해시태그 추가 부분을 어떻게 진행해야 될지 몰라서 일단 보류
