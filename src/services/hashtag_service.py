@@ -144,7 +144,7 @@ async def recommend_user(member_id: int, es_client: Elasticsearch):
     #res = await find_hashtags(member_id)
 
     # Create the query vector from the hashtags content
-    query_vector = vectorizer.transform(['초코송이 과자']).toarray()[0].tolist()
+    query_vector = vectorizer.transform(['음식']).toarray()[0].tolist()
     
     # Changed query
     script_query = {
@@ -174,7 +174,11 @@ async def recommend_user(member_id: int, es_client: Elasticsearch):
             print("No results returned from query.")
             return None
         
-        return response
+        # Display results
+        for hit in response['hits']['hits']:
+            print(f'Member ID: {hit["_source"]["member_id"]}, Content: {hit["_source"]["content"]}, Score: {hit["_score"]}')
+
+        return response  # or process the response to your desired format before returning
     except BadRequestError as e:
         print(f"Error executing search query: {str(e)}")
         if 'script_score script returned an invalid score [NaN]' in str(e):
@@ -186,9 +190,3 @@ async def recommend_user(member_id: int, es_client: Elasticsearch):
     except Exception as e:
         print(f"An unexpected error occurred: {str(e)}")
         return None
-    
-    # Display results
-    for hit in response['hits']['hits']:
-        print(f'Member ID: {hit["_source"]["member_id"]}, Content: {hit["_source"]["content"]}, Score: {hit["_score"]}')
-
-    return response  # or process the response to your desired format before returning
