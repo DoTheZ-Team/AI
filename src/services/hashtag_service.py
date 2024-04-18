@@ -5,7 +5,7 @@ from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
 from elasticsearch import Elasticsearch, helpers, TransportError
 from elasticsearch.exceptions import BadRequestError
-from src.database import es_client  # Make sure to import your Elasticsearch client
+from src.database import es_client
             
             
 # 사용자의 id를 이용해 작성한 post_id를 전부 받아온다.
@@ -79,11 +79,11 @@ def index_creation(tfidf_matrix:np.ndarray):
                     "type": "keyword"
                 },
                 "content": {
-                    "type": "text"  # Changed from 'keyword' to 'text' for full-text search capabilities
+                    "type": "text" 
                 },
                 "content_vector": {
                     "type": "dense_vector",
-                    "dims": tfidf_matrix.shape[1]  # Set dimensions to the number of features in TF-IDF
+                    "dims": tfidf_matrix.shape[1] 
                 }
             }
         }
@@ -110,19 +110,6 @@ async def indexing(docs:dict, es_client:Elasticsearch):
     # Bulk indexing the documents
     await helpers.bulk(es_client, docs)
     
-# def find_hashtags(member_id):
-#     # Query to Elasticsearch to get hashtag by member_id
-#     res = es_client.search(
-#         index="tfidf_vector_index",  # Make sure this is the correct index name
-#         body={
-#             "query": {
-#                 "term": {"member_id": member_id}
-#             }
-#         }
-#     )
-    
-#     return res
-# 바뀐 find_hashtags 함수
 async def find_hashtags(member_id):
     # Query to Elasticsearch to get hashtag by member_id
     res = await es_client.search(
@@ -139,8 +126,8 @@ async def find_hashtags(member_id):
 
 async def recommend_user(member_id: int, es_client: Elasticsearch):
     # Perform the search and await the result
-    # 현재 해시태그채로 서버에 저장이 안돼있음......... 그래서 find_hashtag 자체가 동작을 안함;;;
-    # 대박... 이거 나중에 api 연결하고 해결해야될듯....
+    # 현재 해시태그채로 서버에 저장이 안되어있음. 그래서 find_hashtag 자체가 동작을 안함
+    # 이거 나중에 api 연결하고 해결할 예정
     #res = await find_hashtags(member_id)
 
     # Create the query vector from the hashtags content
