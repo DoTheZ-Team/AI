@@ -136,36 +136,6 @@ async def find_hashtags(member_id):
     
     return res
 
-# 기존
-# async def recommend_user(member_id:int, es_client:Elasticsearch):
-#     res = await find_hashtags(member_id)
-    
-#     query_vector = vectorizer.transform(res).toarray()[0].tolist()
-    
-#     # Define the vector similarity query
-#     script_query = {
-#         "script_score": {
-#             "query": {"match_all": {}},
-#             "script": {
-#                 "source": "cosineSimilarity(params.query_vector, doc['content_vector'])",
-#                 "params": {"query_vector": query_vector}
-#             }
-#         }
-#     }
-    
-#     # Perform the search
-#     response = await es_client.search(
-#         index="tfidf_vector_index",
-#         query=script_query,
-#         size=10,
-#         _source_includes=["member_id", "content"]
-#     )
-    
-#     # Display results
-#     for hit in response['hits']['hits']:
-#         print(f'Member ID: {hit["_source"]["member_id"]}, Content: {hit["_source"]["content"]}, Score: {hit["_score"]}')
-
-# 변경된 코드
 
 async def recommend_user(member_id: int, es_client: Elasticsearch):
     # Perform the search and await the result
