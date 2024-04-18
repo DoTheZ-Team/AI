@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
-from elasticsearch import Elasticsearch, helpers
+from elasticsearch import Elasticsearch, helpers, TransportError
+from elasticsearch.exceptions import BadRequestError
 from src.database import es_client  # Make sure to import your Elasticsearch client
             
             
@@ -109,10 +110,23 @@ async def indexing(docs:dict, es_client:Elasticsearch):
     # Bulk indexing the documents
     await helpers.bulk(es_client, docs)
     
-def find_hashtags(member_id):
+# def find_hashtags(member_id):
+#     # Query to Elasticsearch to get hashtag by member_id
+#     res = es_client.search(
+#         index="tfidf_vector_index",  # Make sure this is the correct index name
+#         body={
+#             "query": {
+#                 "term": {"member_id": member_id}
+#             }
+#         }
+#     )
+    
+#     return res
+# 바뀐 find_hashtags 함수
+async def find_hashtags(member_id):
     # Query to Elasticsearch to get hashtag by member_id
-    res = es_client.search(
-        index="tfidf_vector_index",  # Make sure this is the correct index name
+    res = await es_client.search(
+        index="hashtags",  # Ensure that this index exists in Elasticsearch
         body={
             "query": {
                 "term": {"member_id": member_id}
@@ -122,30 +136,89 @@ def find_hashtags(member_id):
     
     return res
 
-async def recommend_user(member_id:int, es_client:Elasticsearch):
-    res = await find_hashtags(member_id)
+# 기존
+# async def recommend_user(member_id:int, es_client:Elasticsearch):
+#     res = await find_hashtags(member_id)
     
-    query_vector = vectorizer.transform(res).toarray()[0].tolist()
+#     query_vector = vectorizer.transform(res).toarray()[0].tolist()
     
-    # Define the vector similarity query
+#     # Define the vector similarity query
+#     script_query = {
+#         "script_score": {
+#             "query": {"match_all": {}},
+#             "script": {
+#                 "source": "cosineSimilarity(params.query_vector, doc['content_vector'])",
+#                 "params": {"query_vector": query_vector}
+#             }
+#         }
+#     }
+    
+#     # Perform the search
+#     response = await es_client.search(
+#         index="tfidf_vector_index",
+#         query=script_query,
+#         size=10,
+#         _source_includes=["member_id", "content"]
+#     )
+    
+#     # Display results
+#     for hit in response['hits']['hits']:
+#         print(f'Member ID: {hit["_source"]["member_id"]}, Content: {hit["_source"]["content"]}, Score: {hit["_score"]}')
+
+# 변경된 코드
+
+async def recommend_user(member_id: int, es_client: Elasticsearch):
+    # Perform the search and await the result
+    # 현재 해시태그채로 서버에 저장이 안돼있음......... 그래서 find_hashtag 자체가 동작을 안함;;;
+    # 대박... 이거 나중에 api 연결하고 해결해야될듯....
+    #res = await find_hashtags(member_id)
+
+    # Create the query vector from the hashtags content
+    query_vector = vectorizer.transform(['초코송이 과자']).toarray()[0].tolist()
+    
+    # Changed query
     script_query = {
-        "script_score": {
-            "query": {"match_all": {}},
-            "script": {
-                "source": "cosineSimilarity(params.query_vector, doc['content_vector'])",
-                "params": {"query_vector": query_vector}
+        "query": {
+            "script_score": {
+                "query": {"match_all": {}},
+                    "script": {
+                        "source": "cosineSimilarity(params.query_vector, doc['content_vector']) + 1.0",
+                        "params": {"query_vector": query_vector}
+                    }
+                }
+            },
+            "collapse": {
+            "field": "member_id"
             }
         }
-    }
     
-    # Perform the search
-    response = await es_client.search(
-        index="tfidf_vector_index",
-        query=script_query,
-        size=10,
-        _source_includes=["member_id", "content"]
-    )
+    try:
+        # Perform the search and await the response
+        response = await es_client.search(
+            index="tfidf_vector_index",
+            body=script_query,
+            size=10
+        )
+        # Check if the response is empty or null
+        if not response['hits']['hits']:
+            print("No results returned from query.")
+            return None
+        
+        return response
+    except BadRequestError as e:
+        print(f"Error executing search query: {str(e)}")
+        if 'script_score script returned an invalid score [NaN]' in str(e):
+            print("Script returned NaN. Terminating function.")
+        return None
+    except TransportError as e:
+        print(f"Transport error: {str(e)}")
+        return None
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+        return None
     
     # Display results
     for hit in response['hits']['hits']:
         print(f'Member ID: {hit["_source"]["member_id"]}, Content: {hit["_source"]["content"]}, Score: {hit["_score"]}')
+
+    return response  # or process the response to your desired format before returning
