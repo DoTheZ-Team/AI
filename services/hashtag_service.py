@@ -14,101 +14,6 @@ from db.database import es_client
 # 1. 만약 불러온 문자열과 업데이트된 문자열이 동일하다면 바로 추천을 진행한다.
 # 2. 만약 불러온 문자열과 업데이트된 문자열이 다르다면 elasticsearch업데이트를 진행한 후 추천을 진행한다.
 # Load the dataset
-data_path = 'final_dataset.csv'
-data = pd.read_csv(data_path)
-
-vectorizer = TfidfVectorizer()
-    
-# TF-IDF 수행 함수 -> 해당 함수를 통해 주어진 데이터를 TF-IDF로 변환한다.
-# 만약 새로운 해시태그가 추가된 상태라면 무조건 모든 데이터에 대해 TF-IDF를 수행해야 함.
-
-def update_hashtag(member_id:int, new_hashtag:str, res:Elasticsearch):
-# 문서가 있는 경우 content 필드에 새 해시태그를 추가합니다.
-    if res['hits']['total']['value'] > 0:
-        # Elasticsearch 문서의 현재 내용을 가져옵니다.
-        current_hashtag_doc = res['hits']['hits'][0]
-        current_content = current_hashtag_doc['_source']['content']
-
-        # 새로운 해시태그를 기존 내용에 추가합니다.
-        updated_content = current_content + ' ' + new_hashtag
-        
-        # 문서를 업데이트 합니다.
-        es_client.update(
-            index="hashtags",
-            id=current_hashtag_doc['_id'],
-            body={
-                "doc": {
-                    "content": updated_content,
-                    "updated_at": datetime.now()
-                }
-            }
-        )
-        print(f"새로운 해시태그가 추가되었습니다: {new_hashtag}")
-        
-        return updated_content
-
-    else:
-            # 새 문서를 생성합니다.
-            new_hashtag_doc = {
-                "member_id": member_id,
-                "content": new_hashtag,
-                "created_at": datetime.now(),
-                "updated_at": datetime.now()
-            }
-            es_client.index(index="hashtags", document=new_hashtag_doc)
-            
-            print(f"새로운 해시태그 문서가 생성되었습니다: {new_hashtag}")
-            return new_hashtag_doc
-        
-def TF_IDF():
-    # Compute TF-IDF
-    tfidf_matrix = vectorizer.fit_transform(data['content'])
-    
-    return tfidf_matrix, data
-
-def index_creation(tfidf_matrix:np.ndarray):
-    # Define the index configuration with dense_vector type
-    index_config = {
-        "settings": {
-            "number_of_shards": 1,
-            "number_of_replicas": 0
-        },
-        "mappings": {
-            "properties": {
-                "member_id": {
-                    "type": "keyword"
-                },
-                "content": {
-                    "type": "text" 
-                },
-                "content_vector": {
-                    "type": "dense_vector",
-                    "dims": tfidf_matrix.shape[1] 
-                }
-            }
-        }
-    }
-    
-    # Create the index
-    es_client.indices.create(index='tfidf_vector_index', body=index_config, ignore=400)
-    return es_client
-    
-def prepare_documents(tfidf_matrix:np.ndarray):
-    # Prepare documents for indexing
-    docs = [{
-        "_index": "tfidf_vector_index",
-        "_source": {
-            "member_id": row['member_id'],
-            "content": row['content'],
-            "content_vector": tfidf_matrix[index].toarray().flatten().tolist()  # Convert CSR row to dense format and flatten to a list
-        }
-    } for index, row in data.iterrows()]
-    
-    return docs
-
-async def indexing(docs:dict, es_client:Elasticsearch):
-    # Bulk indexing the documents
-    await helpers.bulk(es_client, docs)
     
 async def find_hashtags(member_id):
     # Query to Elasticsearch to get hashtag by member_id
@@ -124,13 +29,15 @@ async def find_hashtags(member_id):
     return res
 
 
+# 현재 이거 다 에러뜨는 상태!!!
 async def recommend_user(member_id: int, es_client: Elasticsearch):
     # Perform the search and await the result
     # 현재 해시태그채로 서버에 저장이 안되어있음. 그래서 find_hashtag 자체가 동작을 안함
     # 이거 나중에 api 연결하고 해결할 예정
     #res = await find_hashtags(member_id)
 
-    # Create the query vector from the hashtags content
+    # 이것도 api 연결되고 나서나 할 수 있을듯..
+    # vectorizer = TfidfVectorizer()
     query_vector = vectorizer.transform(['음식']).toarray()[0].tolist()
     
     # Changed query
