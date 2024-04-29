@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Form, HTTPException
-import src.services.hashtag_service as svs
-from src.database import es_client
-from src.models.recommendation import Recommendation, Recommendations
+import services.hashtag_service as svs
+from db.database import es_client
+from models.recommendation import Recommendation, Recommendations
 
 router = APIRouter()
 

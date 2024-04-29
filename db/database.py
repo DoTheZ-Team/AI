@@ -1,5 +1,5 @@
 from elasticsearch import AsyncElasticsearch
-from src.config import ES_URL
+from core.config import ES_URL
 
 es_client = AsyncElasticsearch(ES_URL)
 

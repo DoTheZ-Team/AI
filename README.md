@@ -25,14 +25,26 @@ fast api가 첨이라 파일 구조가 엉망입니다,,
 }
 ```
 
-### API 종류
-#### 해시태그 생성 및 업데이트
-@app.post("/user/hashtag/update")
-![alt text](image-1.png)
+### 내가 까먹을까봐 적는 파일구조
+[참고링크](https://taptorestart.tistory.com/entry/FastAPI-디렉터리-구조를-어떻게-하는-게-좋을까)
 
-#### 해시태그 기반 유저추천
-@app.get("/user/{member_id}/recommend")
-![alt text](image.png)
+> api
 
-기타사항은 노션에 좀 더 자세히 정리해두겠습니다~
-아직 스티커 제작은 구현XX
+말그대로 api를 정의하는 부분
+controller와 비슷한 역할
+
+> core
+
+공통파일
+
+> db
+
+데이터베이스 관련 설정 파일
+
+> models
+
+Entity
+
+> schemas
+
+DTO

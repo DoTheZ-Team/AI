@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from src.api.user_routes import router as user_router
-from src.database import es_client, close_elasticsearch
+from api.recommend import router as user_router
+from db.database import es_client, close_elasticsearch
 
 app = FastAPI()
 

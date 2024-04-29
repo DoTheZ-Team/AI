@@ -5,7 +5,7 @@ from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
 from elasticsearch import Elasticsearch, helpers, TransportError
 from elasticsearch.exceptions import BadRequestError
-from src.database import es_client
+from db.database import es_client
             
             
 # 사용자의 id를 이용해 작성한 post_id를 전부 받아온다.
