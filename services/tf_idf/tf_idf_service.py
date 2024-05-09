@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
-from elasticsearch import Elasticsearch, helpers, TransportError
+from elasticsearch import Elasticsearch, helpers, TransportError, AsyncElasticsearch
 from elasticsearch.exceptions import BadRequestError
 from db.database import es_client
 
@@ -16,9 +16,9 @@ def TF_IDF():
     # 받아온 데이터로 tf-idf 수행
     tfidf_matrix = vectorizer.fit_transform(data['content'])
     
-    return tfidf_matrix, data
+    return tfidf_matrix, data, vectorizer
 
-def index_creation(tfidf_matrix:np.ndarray):
+async def index_creation(tfidf_matrix:np.ndarray):
     # Define the index configuration with dense_vector type
     index_config = {
         "settings": {
@@ -42,7 +42,7 @@ def index_creation(tfidf_matrix:np.ndarray):
     }
     
     # Create the index
-    es_client.indices.create(index='tfidf_vector_index', body=index_config, ignore=400)
+    await es_client.indices.create(index='tfidf_vector_index', body=index_config, ignore=400)
     return es_client
     
 def prepare_documents(tfidf_matrix:np.ndarray):
@@ -58,6 +58,6 @@ def prepare_documents(tfidf_matrix:np.ndarray):
     
     return docs
 
-async def indexing(docs:dict, es_client:Elasticsearch):
-    # Bulk indexing the documents
-    await helpers.bulk(es_client, docs)
+async def indexing(docs: list, es_client: AsyncElasticsearch):
+    # 비동기 버전의 Elasticsearch 클라이언트 사용
+    await helpers.async_bulk(es_client, docs)
