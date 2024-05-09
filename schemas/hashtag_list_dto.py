@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-from schemas.HashtagDTO import Hashtag
+from schemas.hashtag_dto import Hashtag
 
 class HashtagList(BaseModel):
     member_id: int

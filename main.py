@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.recommend import router as user_router
+from api.recommend import router as recommend_router
 from db.database import es_client, close_elasticsearch
 
 app = FastAPI()
@@ -12,4 +12,4 @@ async def startup_event():
 async def shutdown_event():
     await close_elasticsearch()
     
-app.include_router(user_router)
+app.include_router(recommend_router)

@@ -1,16 +1,22 @@
 from fastapi import APIRouter, Form, HTTPException
 import services.hashtag_service as svs
-from db.database import es_client
+import services.tf_idf.tf_idf_service as tfidfsvs
 from models.recommendation import Recommendation, Recommendations
+from db.database import es_client
 
 router = APIRouter()
 
 # 추천 결과 반환 API
 @router.get("/user/{member_id}/recommend", response_model=Recommendations)
 async def recommend_user(member_id: int):
-    # if(해시태그가 기존 그대로임): TF-IDF 수행 안하고 바로 아래 함수부터 실행
-    # res = svs.find_hashtags(member_id)
-    response = await svs.recommend_user(member_id, es_client)
+    
+    tfidf_matrix, data, vectorizer = tfidfsvs.TF_IDF()
+    es_client = await tfidfsvs.index_creation(tfidf_matrix)
+    docs = tfidfsvs.prepare_documents(tfidf_matrix)
+    await tfidfsvs.indexing(docs, es_client)
+
+    
+    response = await svs.recommend_user(member_id, es_client, vectorizer)
     
     try:
         if response['hits']['hits']:
