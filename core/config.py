@@ -2,20 +2,6 @@
 from pydantic import BaseModel
 import yaml
 
-# class DatabaseConfig(BaseModel):
-#     host: str
-#     apiKey: str
-
-
-# def load_config(path: str):
-#     with open(path, 'r') as f:
-#         loaded_yaml = yaml.safe_load(f)
-#         db_config = DatabaseConfig(**loaded_yaml['elasticsearch'])
-#     return db_config
-
-# # Load configuration
-# db_config = load_config('core/application.yml')
-
 import requests
 
 def get_config():

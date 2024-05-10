@@ -8,11 +8,7 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
-    eureka_config = config['propertySources'][0]['source']
-    await eureka_client.init_async(
-        eureka_server=eureka_config['eureka.client.service-url.defaultZone'], 
-        app_name="recommnedation-service",
-        instance_port=8080)
+    print(await es_client.info())
     pass
 
 @app.on_event("shutdown")
