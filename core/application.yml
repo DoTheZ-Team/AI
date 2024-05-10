@@ -1,6 +1,9 @@
 server:
  port: 8084
 
+application:
+  name: recommend-service
+
 eureka:
  instance:
    hostname: localhost
