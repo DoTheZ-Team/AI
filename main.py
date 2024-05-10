@@ -4,7 +4,8 @@ from db.database import es_client, close_elasticsearch
 import uvicorn
 
 app = FastAPI(
-    title="Recommend-Service")
+    title="Recommend-Service", 
+    openapi_url=f"/recommends/openapi.json")
 
 @app.on_event("startup")
 async def startup_event():
@@ -17,5 +18,5 @@ async def shutdown_event():
     
 app.include_router(recommend_router)
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="127.0.0.1", port=8080)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8084)
