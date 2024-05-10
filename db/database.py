@@ -1,10 +1,13 @@
 from elasticsearch import AsyncElasticsearch
 from core.config import ES_URL, api_key
 
+from core.config import db_config
+
+
 es_client = AsyncElasticsearch(
-    ES_URL,
-    api_key=api_key
+    db_config.host,
+    api_key = db_config.apiKey
 )
 
 async def close_elasticsearch():
-    es_client.close()
+    await es_client.close()

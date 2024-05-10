@@ -9,7 +9,6 @@ router = APIRouter()
 # 추천 결과 반환 API
 @router.get("/user/{member_id}/recommend", response_model=Recommendations)
 async def recommend_user(member_id: int):
-    
     tfidf_matrix, data, vectorizer = tfidfsvs.TF_IDF()
     es_client = await tfidfsvs.index_creation(tfidf_matrix)
     docs = tfidfsvs.prepare_documents(tfidf_matrix)
