@@ -47,8 +47,6 @@ jobs:
             AWS_BUCKET=${{ secrets.AWS_BUCKET }}
             AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
             AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
-            AUTH_URL=${{ secrets.AUTH_URL }}
-            POST_URL=${{ secrets.POST_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
 
   update-manifest:

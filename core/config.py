@@ -1,7 +1,3 @@
-# config.py
-from pydantic import BaseModel
-import yaml
-
 import requests
 
 def get_config():
