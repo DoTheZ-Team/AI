@@ -1,6 +1,4 @@
 from elasticsearch import AsyncElasticsearch
-from core.config import ES_URL, api_key
-
 from core.config import config
 
 

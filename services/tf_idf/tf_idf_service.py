@@ -1,10 +1,8 @@
 # from app.services.query_function import find_hashtags
 import pandas as pd
 import numpy as np
-from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
-from elasticsearch import Elasticsearch, helpers, TransportError, AsyncElasticsearch
-from elasticsearch.exceptions import BadRequestError
+from elasticsearch import helpers, AsyncElasticsearch
 from db.database import es_client
 
 # 데이터 가져오는 함수가 필요함. 이거는 나중에 수정할 예정
