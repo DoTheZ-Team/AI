@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, HTTPException
+from fastapi import APIRouter, HTTPException
 import services.hashtag_service as svs
 import services.tf_idf.tf_idf_service as tfidfsvs
 from models.recommendation import Recommendation, Recommendations
