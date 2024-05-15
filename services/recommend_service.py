@@ -6,7 +6,7 @@ from elasticsearch.exceptions import BadRequestError
 from core.error_handling import ErrorHandler
 
 # TODO: 응답 사이즈 결정해주면 그대로 수정 예정!
-async def recommend(member_id: int, es_client: AsyncElasticsearch, top_k: int = 10):
+async def recommend(member_id: int, followed_ids: list, es_client: AsyncElasticsearch, top_k: int = 10):
     # 사용자의 벡터를 가져오기
     try:
         query = {
@@ -24,16 +24,25 @@ async def recommend(member_id: int, es_client: AsyncElasticsearch, top_k: int = 
     except KeyError:
         ErrorHandler.raise_not_found_error()
 
-    # 코사인 유사도를 이용한 검색 쿼리
+    # 코사인 유사도를 이용한 검색 쿼리, 이미 팔로우한 사용자를 제외
     query = {
         "size": top_k,
         "query": {
-            "script_score": {
-                "query": {"match_all": {}},
-                "script": {
-                    "source": "cosineSimilarity(params.query_vector, 'content_vector')",
-                    "params": {"query_vector": user_vector}
-                }
+            "bool": {
+                "must_not": [
+                    {"terms": {"member_id": followed_ids}}
+                ],
+                "should": [
+                    {
+                        "script_score": {
+                            "query": {"match_all": {}},
+                            "script": {
+                                "source": "cosineSimilarity(params.query_vector, 'content_vector')",
+                                "params": {"query_vector": user_vector}
+                            }
+                        }
+                    }
+                ]
             }
         }
     }
