@@ -7,6 +7,9 @@ from core.error_handling import ErrorHandler
 
 # TODO: 응답 사이즈 결정해주면 그대로 수정 예정!
 async def recommend(member_id: int, followed_ids: list, es_client: AsyncElasticsearch, top_k: int = 10):
+    # memberId를 followsId 목록에 추가(이거 안해주면 쿼리 결과에 요청한 사용자가 포함되어 나옴)
+    followed_ids.append(member_id)
+    
     # 사용자의 벡터를 가져오기
     try:
         query = {
