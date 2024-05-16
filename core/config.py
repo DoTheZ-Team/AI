@@ -1,12 +1,14 @@
 import requests
 from core.error_handling import ErrorHandler
+import dotenv
+import os
+
+dotenv.load_dotenv('.env')
 
 def get_config():
-    #config_url = "http://glue-config.glue-service.svc.cluster.local:8888/recommend-dev/default"
-    config_url = "http://localhost:8888/recommend-dev/default"
-    
     try: 
-        response = requests.get(config_url)
+        response = requests.get(os.environ.get("CONFIG_URL"))
+        # response = requests.get(config_url)
         print(response.json())
         return response.json()
     

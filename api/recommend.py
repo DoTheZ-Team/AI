@@ -1,14 +1,20 @@
 from fastapi import APIRouter
-from models.recommendation_response import Recommendation, Recommendations
-from models.recommend_request import RecommendationRequest
+from models.recommend_model import Recommendation, Recommendations, RecommendationRequest
 from db.database import es_client
 import services.recommend_service as recommendsvs
+import services.tmp.tf_idf_service as tfidfsvs
 
-router = APIRouter()
+recommends_router = APIRouter()
 
 # 추천 결과 반환 API
-@router.post("/recommends", response_model=Recommendations)
+@recommends_router.post("/recommend", response_model=Recommendations)
 async def recommend_user(request: RecommendationRequest):
+    # # 혹시나 인덱스 삭제 후 생성할 때 사용하기 위해 둔 부분
+    # tfidf_matrix, vectorizer = tfidfsvs.TF_IDF()
+    # es_client = await tfidfsvs.index_creation(tfidf_matrix)
+    # docs = tfidfsvs.prepare_documents(tfidf_matrix)
+    # await tfidfsvs.indexing(docs, es_client)
+    # return
 
     response = await recommendsvs.recommend(request.memberId, request.followsId, es_client)
     
