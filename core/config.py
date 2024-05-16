@@ -7,8 +7,9 @@ dotenv.load_dotenv('.env')
 
 def get_config():
     try: 
-        response = requests.get(os.environ.get("CONFIG_URL"))
-        # response = requests.get(config_url)
+        #response = requests.get(os.environ.get("CONFIG_URL"))
+        response = requests.get("http://glue-config.glue-service.svc.cluster.local:8888/recommend-dev/default")
+
         print(response.json())
         return response.json()
     

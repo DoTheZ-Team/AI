@@ -18,8 +18,7 @@ jobs:
         
       - name: Set env file
         run: |
-          touch ./.env
-          echo "${{ secrets.ENV_FILE }}" >> ./.env
+          echo "CONFIG_URL=${{ secrets.CONFIG_URL }}" > ./.env
         shell: bash
 
       - name: Login to KakaoCloud
