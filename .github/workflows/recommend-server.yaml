@@ -18,8 +18,8 @@ jobs:
         
       - name: Set env file
         run: |
-          touch .env
-          echo "${{ secrets.RECOMMEND_APPLICATION }}" >> .env
+          touch ./.env
+          echo "${{ secrets.ENV_FILE }}" >> ./.env
         shell: bash
 
       - name: Login to KakaoCloud
