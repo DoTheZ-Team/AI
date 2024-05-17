@@ -13,3 +13,4 @@ secrets.json
 core/config.py
 core/config.py
 core/application.yaml
+.env

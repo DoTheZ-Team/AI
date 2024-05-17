@@ -1,15 +1,22 @@
 import requests
 from core.error_handling import ErrorHandler
+import dotenv
+import os
+
+dotenv.load_dotenv('.env')
 
 def get_config():
-    #config_url = "http://glue-config.glue-service.svc.cluster.local:8888/recommend-dev/default"
-    config_url = "http://localhost:8888/recommend-dev/default"
-    
     try: 
-        response = requests.get(config_url)
-        print(response.json())
-        return response.json()
-    
+        # config_url = os.environ.get("CONFIG_URL")
+        # if not config_url:
+        #     raise ValueError("CONFIG_URL 환경 변수가 설정되지 않았습니다.")
+        # print(f"CONFIG_URL: {config_url}")  # 디버깅 출력
+        # response = requests.get(config_url)
+        # print(response.json())
+        # return response.json()
+        es_config = os.environ.get("ES_CONFIG")
+        api_key = os.environ.get("API_KEY")
+        return es_config, api_key
     except requests.exceptions.HTTPError as e:
         ErrorHandler.handle_requests_http_error(e, "서버에서 설정을 가져오는데 실패했습니다.")
     except requests.exceptions.RequestException as e:

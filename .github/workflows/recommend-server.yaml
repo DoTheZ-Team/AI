@@ -15,6 +15,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        
+      - name: Set env file
+        run: |
+          touch ./.env
+          echo "${{ secrets.ENV_FILE }}" >> ./.env
+        shell: bash
 
       - name: Login to KakaoCloud
         uses: docker/login-action@v2
@@ -30,11 +36,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.GLUE_PROJECT }}/glue-repository/glue-recommend:${{ github.sha }}
-          build-args: |
-            AWS_BUCKET=${{ secrets.AWS_BUCKET }}
-            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
 
   update-manifest:
     runs-on: ubuntu-latest
