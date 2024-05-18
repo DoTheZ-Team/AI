@@ -11,11 +11,10 @@ async def update_user(request: UpdateRequest):
     # newHashtag 리스트를 문자열로 결합
     new_hashtag = " ".join(request.newHashtag)
     
-    # data, vectorizer = await updatesvs.update(request.memberId, new_content, es_client)
     data = await updatesvs.update(request.memberId, new_hashtag, es_client)
     
     # numpy.int64 타입을 int로 변환
     for item in data:
         item['member_id'] = int(item['member_id'])
     
-    return UpdateResponse(message="User data updated successfully", updated_data=data)
+    return UpdateResponse(message="해시태그 업로드가 완료되었습니다.", updated_data=data)

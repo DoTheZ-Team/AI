@@ -4,7 +4,7 @@ from elasticsearch import AsyncElasticsearch, TransportError, helpers
 from elasticsearch.exceptions import BadRequestError
 from core.error_handling import ErrorHandler
 
-async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearch):
+async def edit(member_id: int, change_hashtag: str, es_client: AsyncElasticsearch):
     vectorizer = TfidfVectorizer()
     
     # 사용자의 벡터를 가져오기
@@ -15,20 +15,17 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
             }
         }
         response = await es_client.search(index='tfidf_vector_index', body=query) 
-               
-        if response['hits']['total']['value'] == 0:
-            # 사용자 벡터가 없으면 새로운 데이터 추가
-            existing_content = ""
-        else:
-            existing_content = response['hits']['hits'][0]['_source']['content']
+
+        # 결과는 그냥 바로 저장(삭제 또는 수정이기에 데이터가 없다면 따로 추가할 필요 없음)
+        existing_content = response['hits']['hits'][0]['_source']['content']
         
     except KeyError:
         ErrorHandler.raise_not_found_error()
         
     try: 
-        # 새로운 해시태그를 기존 해시태그에 추가
-        combined_content = existing_content + " " + new_hashtags
-        print(f"기존 해시태그: {existing_content}, 새로운 해시태그: {new_hashtags}, 결합된 해시태그: {combined_content}")
+        # 새로운 해시태그 값으로 갈아끼움
+        new_content = change_hashtag
+        print(f"기존 해시태그: {existing_content}, 새로운 해시태그: {change_hashtag}")
 
         # ElasticSearch에서 현재 인덱스의 모든 데이터 불러오기
         data = await get_tfidf_matrix(es_client)
@@ -36,7 +33,7 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
         # 새로운 내용을 데이터 프레임에 추가
         new_row = pd.DataFrame({
             'member_id': [member_id],
-            'content': [combined_content]
+            'content': [new_content]
         })
         data = pd.concat([data, new_row], ignore_index=True)
 
@@ -91,10 +88,10 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
         await helpers.async_bulk(es_client, actions)
 
         # 최신 데이터 반환
-        updated_data = [{
+        updated_data = {
             "member_id": member_id,
-            "content": combined_content
-        }]
+            "content": new_content
+        }
         
         return updated_data
     except helpers.BulkIndexError as e:
