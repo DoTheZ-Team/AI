@@ -10,6 +10,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup_event():
+    
     print(await es_client.info())
     pass
 

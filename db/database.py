@@ -3,13 +3,6 @@ from core.error_handling import ErrorHandler
 from core.config import config
 
 try:
-    # # config 서버에서 가져온 설정을 이용해 Elasticsearch 클라이언트를 생성
-    # es_config = config['propertySources'][0]['source']
-
-    # es_client = AsyncElasticsearch(
-    #     es_config['elasticsearch.host'],
-    #     api_key=es_config['elasticsearch.apiKey']
-    # )
     es_config, api_key = config
     
     es_client = AsyncElasticsearch(
