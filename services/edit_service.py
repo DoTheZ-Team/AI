@@ -35,6 +35,11 @@ async def edit(member_id: int, change_hashtag: str, es_client: AsyncElasticsearc
             'member_id': [member_id],
             'content': [new_content]
         })
+        
+        # 중복된 member_id 값을 가진 행 제거
+        data = data[data['member_id'] != member_id]
+        
+        # 새로운 데이터를 추가하여 중복을 제거
         data = pd.concat([data, new_row], ignore_index=True)
 
         # TF-IDF 벡터 재계산
