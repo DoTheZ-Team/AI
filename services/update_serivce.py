@@ -5,7 +5,6 @@ from elasticsearch import AsyncElasticsearch, TransportError, helpers
 from elasticsearch.exceptions import BadRequestError
 from core.error_handling import ErrorHandler
 
-
 async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearch):
     vectorizer = TfidfVectorizer()
     
@@ -19,18 +18,17 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
         response = await es_client.search(index='tfidf_vector_index', body=query) 
                
         if response['hits']['total']['value'] == 0:
-            ErrorHandler.raise_not_found_error()
-
-        # 첫 번째 매칭된 문서의 벡터 사용
-        # doc_id = response['hits']['hits'][0]['_id']
-        existing_content = response['hits']['hits'][0]['_source']['content']
+            # 사용자 벡터가 없으면 새로운 데이터 추가
+            existing_content = ""
+        else:
+            existing_content = response['hits']['hits'][0]['_source']['content']
         
     except KeyError:
         ErrorHandler.raise_not_found_error()
         
     try: 
         # 새로운 해시태그를 기존 해시태그에 추가
-        combined_content = existing_content +  " " + new_hashtags
+        combined_content = existing_content + " " + new_hashtags
         print(f"기존 해시태그: {existing_content}, 새로운 해시태그: {new_hashtags}, 결합된 해시태그: {combined_content}")
 
         # ElasticSearch에서 현재 인덱스의 모든 데이터 불러오기
@@ -92,15 +90,6 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
             
         # 일괄 삽입
         await helpers.async_bulk(es_client, actions)
-
-
-
-        # ElasticSearch에 새 문서 추가
-        # response = await es_client.index(index='tfidf_vector_index', body=new_doc)
-        # new_doc_id = response['_id']
-
-        # ElasticSearch에 사용자 데이터 업데이트
-        # await es_client.update(index='tfidf_vector_index', id=doc_id, body=update_data)
 
         # 최신 데이터 반환
         updated_data = [{
