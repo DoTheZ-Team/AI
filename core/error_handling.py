@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 class ErrorHandler:
     @staticmethod
-    def raise_not_found_error(detail="유저 아이디를 찾을 수 없습니다."):
+    def raise_not_found_error(detail="블로그 아이디를 찾을 수 없습니다."):
         raise HTTPException(status_code=404, detail=detail)
 
     @staticmethod

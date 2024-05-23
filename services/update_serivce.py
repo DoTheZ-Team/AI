@@ -4,14 +4,14 @@ from elasticsearch import AsyncElasticsearch, TransportError, helpers
 from elasticsearch.exceptions import BadRequestError
 from core.error_handling import ErrorHandler
 
-async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearch):
+async def update(blog_id: int, new_hashtags: str, es_client: AsyncElasticsearch):
     vectorizer = TfidfVectorizer()
     
     # 사용자의 벡터를 가져오기
     try:
         query = {
             "query": {
-                "term": {"member_id": member_id}
+                "term": {"blog_id": blog_id}
             }
         }
         response = await es_client.search(index='tfidf_vector_index', body=query) 
@@ -35,12 +35,12 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
 
         # 새로운 내용을 데이터 프레임에 추가
         new_row = pd.DataFrame({
-            'member_id': [member_id],
+            'blog_id': [blog_id],
             'content': [combined_content]
         })
         
-        # 중복된 member_id 값을 가진 행 제거
-        data = data[data['member_id'] != member_id]
+        # 중복된 blog_id 값을 가진 행 제거
+        data = data[data['blog_id'] != blog_id]
         
         # 새로운 데이터를 추가하여 중복을 제거
         data = pd.concat([data, new_row], ignore_index=True)
@@ -58,7 +58,7 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
                 },
                 "mappings": {
                     "properties": {
-                        "member_id": {
+                        "blog_id": {
                             "type": "keyword"
                         },
                         "content": {
@@ -77,14 +77,14 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
         actions = []
         for idx in range(len(data)):
             
-            member_id = data['member_id'].iloc[idx]
+            blog_id = data['blog_id'].iloc[idx]
             content = data['content'].iloc[idx]
             new_vector = new_tfidf_matrix[idx].toarray().flatten().tolist()
             
             action = {
                 "_index": "tfidf_vector_index",
                 "_source": {
-                    "member_id": member_id,
+                    "blog_id": blog_id,
                     "content": content,
                     "content_vector": new_vector
                 }
@@ -97,7 +97,7 @@ async def update(member_id: int, new_hashtags: str, es_client: AsyncElasticsearc
 
         # 최신 데이터 반환
         updated_data = [{
-            "member_id": member_id,
+            "blog_id": blog_id,
             "content": combined_content
         }]
         
@@ -126,16 +126,16 @@ async def get_tfidf_matrix(es_client: AsyncElasticsearch, index_name: str = 'tfi
 
         # 검색된 문서에서 데이터 추출
         contents = []
-        member_ids = []
+        blog_ids = []
 
         for hit in response['hits']['hits']:
             source = hit['_source']
-            member_ids.append(source['member_id'])
+            blog_ids.append(source['blog_id'])
             contents.append(source['content'])
 
         # 데이터 프레임 생성
         data = pd.DataFrame({
-            'member_id': member_ids,
+            'blog_id': blog_ids,
             'content': contents
         })
         
