@@ -14,7 +14,7 @@ async def recommend_blog(request: RecommendationRequest = Body(..., example={
         "followIds": ["2", "3"]
     })):
     
-    # # # 혹시나 인덱스 삭제 후 생성할 때 사용하기 위해 둔 부분
+    # # # # 혹시나 인덱스 삭제 후 생성할 때 사용하기 위해 둔 부분
     # tfidf_matrix, vectorizer = tfidfsvs.TF_IDF()
     # es_client = await tfidfsvs.index_creation(tfidf_matrix)
     # docs = tfidfsvs.prepare_documents(tfidf_matrix)
@@ -23,5 +23,5 @@ async def recommend_blog(request: RecommendationRequest = Body(..., example={
     response = await recommendsvs.recommend(request.blogId, request.followIds, es_client)
     
     recommend_blog_ids = [hit['_source']['blog_id'] for hit in response['hits']['hits']]
-    
+        
     return recommend_blog_ids
