@@ -2,7 +2,6 @@ from fastapi import APIRouter, Body
 from models.recommend_model import RecommendationRequest
 from db.database import es_client
 import services.recommend_service as recommendsvs
-import services.tmp.tf_idf_service as tfidfsvs
 from typing import List
 
 recommends_router = APIRouter()
