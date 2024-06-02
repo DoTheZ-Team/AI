@@ -14,7 +14,7 @@ async def update(blog_id: int, new_hashtags: str, es_client: AsyncElasticsearch)
                 "term": {"blog_id": blog_id}
             }
         }
-        response = await es_client.search(index='tfidf_vector_index', body=query) 
+        response = await es_client.search(index='tfidf_vector_index2', body=query) 
                
         if response['hits']['total']['value'] == 0:
             # 사용자 벡터가 없으면 새로운 데이터 추가
@@ -28,6 +28,9 @@ async def update(blog_id: int, new_hashtags: str, es_client: AsyncElasticsearch)
     try: 
         # 새로운 해시태그를 기존 해시태그에 추가
         combined_content = existing_content + " " + new_hashtags
+        
+        print(combined_content)
+        
         print(f"기존 해시태그: {existing_content}, 새로운 해시태그: {new_hashtags}, 결합된 해시태그: {combined_content}")
 
         # ElasticSearch에서 현재 인덱스의 모든 데이터 불러오기
@@ -48,9 +51,9 @@ async def update(blog_id: int, new_hashtags: str, es_client: AsyncElasticsearch)
         # TF-IDF 벡터 재계산
         new_tfidf_matrix = vectorizer.fit_transform(data['content'])
 
-        await es_client.indices.delete(index="tfidf_vector_index", ignore=[400, 404])
+        await es_client.indices.delete(index="tfidf_vector_index2")
         await es_client.indices.create(
-            index="tfidf_vector_index",
+            index="tfidf_vector_index2",
             body={
                 "settings": {
                     "number_of_shards": 1,
@@ -82,7 +85,7 @@ async def update(blog_id: int, new_hashtags: str, es_client: AsyncElasticsearch)
             new_vector = new_tfidf_matrix[idx].toarray().flatten().tolist()
             
             action = {
-                "_index": "tfidf_vector_index",
+                "_index": "tfidf_vector_index2",
                 "_source": {
                     "blog_id": blog_id,
                     "content": content,
@@ -113,7 +116,7 @@ async def update(blog_id: int, new_hashtags: str, es_client: AsyncElasticsearch)
         return ErrorHandler.handle_generic_error(str(e))
 
 
-async def get_tfidf_matrix(es_client: AsyncElasticsearch, index_name: str = 'tfidf_vector_index'):
+async def get_tfidf_matrix(es_client: AsyncElasticsearch, index_name: str = 'tfidf_vector_index2'):
     try: 
         # 모든 문서 검색
         query = {

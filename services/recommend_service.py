@@ -13,7 +13,7 @@ async def recommend(blog_id: int, followed_ids: list, es_client: AsyncElasticsea
                 "term": {"blog_id": blog_id}
             }
         }
-        response = await es_client.search(index='tfidf_vector_index', body=query)
+        response = await es_client.search(index='tfidf_vector_index2', body=query)
         
         if response['hits']['total']['value'] == 0:
             ErrorHandler.raise_not_found_error()
@@ -48,7 +48,7 @@ async def recommend(blog_id: int, followed_ids: list, es_client: AsyncElasticsea
     
     try:
         response = await es_client.search(
-            index="tfidf_vector_index",
+            index="tfidf_vector_index2",
             body=query
         )
         if not response['hits']['hits']:

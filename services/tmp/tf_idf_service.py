@@ -47,13 +47,13 @@
 #     }
     
 #     # Create the index
-#     await es_client.indices.create(index='tfidf_vector_index', body=index_config, ignore=400)
+#     await es_client.indices.create(index='tfidf_vector_index2', body=index_config, ignore=400)
 #     return es_client
     
 # def prepare_documents(tfidf_matrix:np.ndarray):
 #     # Prepare documents for indexing
 #     docs = [{
-#         "_index": "tfidf_vector_index",
+#         "_index": "tfidf_vector_index2",
 #         "_source": {
 #             "blog_id": row['member_id'],
 #             "content": row['content'],
