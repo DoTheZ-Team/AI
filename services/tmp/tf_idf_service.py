@@ -1,8 +1,8 @@
-'''
-처음에 데이터 넣을때 필요해서 사용했던 파일.
-일단 남겨두고 나중에 삭제할 예정
-현재 data가 없어서 동작 안함
-'''
+# '''
+# 처음에 데이터 넣을때 필요해서 사용했던 파일.
+# 일단 남겨두고 나중에 삭제할 예정
+# 현재 data가 없어서 동작 안함
+# '''
 
 # import pandas as pd
 # import numpy as np
@@ -32,7 +32,7 @@
 #         },
 #         "mappings": {
 #             "properties": {
-#                 "member_id": {
+#                 "blog_id": {
 #                     "type": "keyword"
 #                 },
 #                 "content": {
@@ -55,7 +55,7 @@
 #     docs = [{
 #         "_index": "tfidf_vector_index",
 #         "_source": {
-#             "member_id": row['member_id'],
+#             "blog_id": row['member_id'],
 #             "content": row['content'],
 #             "content_vector": tfidf_matrix[index].toarray().flatten().tolist()  # Convert CSR row to dense format and flatten to a list
 #         }

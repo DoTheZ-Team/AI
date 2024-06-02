@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List, Any
 
 class EditRequest(BaseModel):
-    memberId: int
+    blogId: int
     changedHashtag: List[str]
 
 class EditResponse(BaseModel):
