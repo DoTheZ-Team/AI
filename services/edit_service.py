@@ -14,7 +14,7 @@ async def edit(blog_id: int, change_hashtag: str, es_client: AsyncElasticsearch)
                 "term": {"blog_id": blog_id}
             }
         }
-        response = await es_client.search(index='tfidf_vector_index', body=query) 
+        response = await es_client.search(index='tfidf_vector_index2', body=query) 
 
         # 결과는 그냥 바로 저장(삭제 또는 수정이기에 데이터가 없다면 따로 추가할 필요 없음)
         existing_content = response['hits']['hits'][0]['_source']['content']
@@ -45,9 +45,9 @@ async def edit(blog_id: int, change_hashtag: str, es_client: AsyncElasticsearch)
         # TF-IDF 벡터 재계산
         new_tfidf_matrix = vectorizer.fit_transform(data['content'])
 
-        await es_client.indices.delete(index="tfidf_vector_index", ignore=[400, 404])
+        await es_client.indices.delete(index="tfidf_vector_index2", ignore=[400, 404])
         await es_client.indices.create(
-            index="tfidf_vector_index",
+            index="tfidf_vector_index2",
             body={
                 "settings": {
                     "number_of_shards": 1,
@@ -79,7 +79,7 @@ async def edit(blog_id: int, change_hashtag: str, es_client: AsyncElasticsearch)
             new_vector = new_tfidf_matrix[idx].toarray().flatten().tolist()
             
             action = {
-                "_index": "tfidf_vector_index",
+                "_index": "tfidf_vector_index2",
                 "_source": {
                     "blog_id": blog_id,
                     "content": content,
@@ -110,7 +110,7 @@ async def edit(blog_id: int, change_hashtag: str, es_client: AsyncElasticsearch)
         return ErrorHandler.handle_generic_error(str(e))
 
 
-async def get_tfidf_matrix(es_client: AsyncElasticsearch, index_name: str = 'tfidf_vector_index'):
+async def get_tfidf_matrix(es_client: AsyncElasticsearch, index_name: str = 'tfidf_vector_index2'):
     try: 
         # 모든 문서 검색
         query = {
