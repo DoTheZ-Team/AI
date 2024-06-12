@@ -2,7 +2,7 @@
 
 # GLUE: Recommendation Service
 
-* GLUE 서비스의 Post Service project에 대해 소개합니다*
+* GLUE 서비스의 Recommendation Service project에 대해 소개합니다*
 
 [![Static Badge](https://img.shields.io/badge/language-english-red)](./README.md) [![Static Badge](https://img.shields.io/badge/language-korean-blue)](./README-KR.md) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FSinging-voice-conversion%2Fsingtome-model&count_bg=%23E3E30F&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
