@@ -42,8 +42,7 @@ The Sing-To-Me website is a platform where you can create new songs by overlayin
 
 ## **3. Swagger Page**
 
-- **Voice API*: Controlls every request against Voice List(Create, Read, Modify, Delete)
-- **AI Cover Song API*: Controlls every request against Voice List(Create, Read, Modify, Delete) and Checking if the RVC model is running or not.
+- **recommend API**: Controlls every request against Voice List(Create, Read, Modify, Delete)
 
 
 ## **4. Screen Composition**
@@ -61,7 +60,3 @@ The languages, libraries, frameworks, and tools used in the project are as follo
 - **Languages**: Python
 - **Libraries and Frameworks**: 
 - **Tools**: vsCode
-
-> schemas
-
-DTO
